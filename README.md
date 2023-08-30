@@ -9,6 +9,7 @@ https://github.com/jasonacox/pypowerwall
 
 pip3 install pypowerwall
 
+You need to copy the two scripts in your externalscript zabbix folder, adjust timezone in powerwall.py and path in powerwall.sh.
 
 Import Zabbix template. Create a new host (doesn't matter interface, I set SNMP), assign the template, set the correct macros:
 
