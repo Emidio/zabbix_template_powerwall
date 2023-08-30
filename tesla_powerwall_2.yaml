@@ -1,0 +1,258 @@
+zabbix_export:
+  version: '6.2'
+  date: '2023-08-30T12:52:03Z'
+  template_groups:
+    -
+      uuid: 3dcd5bbe90534f9e8eb5c2d53756af63
+      name: Templates/Power
+  templates:
+    -
+      uuid: cb7b7fdb83914df1a885cca429ce940b
+      template: 'Tesla Powerwall'
+      name: 'Tesla Powerwall'
+      description: 'Tesla Powerwall 2 template for Zabbix, using pypowerwall external script.'
+      groups:
+        -
+          name: Templates/Power
+      items:
+        -
+          uuid: cc4c9b526f1e46c5aa921f11f3e31541
+          name: powerwall.battery.firmware
+          type: DEPENDENT
+          key: powerwall.battery.firmware
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Firmware
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+        -
+          uuid: 49a999e219c649b596ee55706b1751be
+          name: powerwall.battery.level
+          type: DEPENDENT
+          key: powerwall.battery.level
+          delay: '0'
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.BatteryLevel
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+        -
+          uuid: f00e774e26dd4a5f9b6277190c682d49
+          name: powerwall.battery.power
+          type: DEPENDENT
+          key: powerwall.battery.power
+          delay: '0'
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Battery.instant_power
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+        -
+          uuid: 0f7a0b3d300b426389302b136f5c0878
+          name: powerwall.battery.voltage
+          type: DEPENDENT
+          key: powerwall.battery.voltage
+          delay: '0'
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Battery.instant_average_voltage
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+          triggers:
+            -
+              uuid: 69bcb81c1ad745afa44bcf2487c13e1f
+              expression: 'last(/Tesla Powerwall/powerwall.battery.voltage,#3)<207'
+              name: powerwall.trigger.voltage.low
+              priority: WARNING
+        -
+          uuid: cb1afa903e274d45a5284ea0b1c7abdb
+          name: powerwall.grid.power
+          type: DEPENDENT
+          key: powerwall.grid.power
+          delay: '0'
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Grid.instant_power
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+        -
+          uuid: 6776d8788d084fb0b1ccdf92f11b171c
+          name: powerwall.grid.voltage
+          type: DEPENDENT
+          key: powerwall.grid.voltage
+          delay: '0'
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Grid.instant_average_voltage
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+        -
+          uuid: 8242193981964d96b630507aa64e0574
+          name: powerwall.home.power
+          type: DEPENDENT
+          key: powerwall.home.power
+          delay: '0'
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Home.instant_power
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+        -
+          uuid: 65bef29dc7cc43e4bea30bf408b24b2a
+          name: powerwall.metrics.battery
+          type: DEPENDENT
+          key: powerwall.metrics.battery
+          delay: '0'
+          value_type: FLOAT
+          units: W
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.PowerMetrics.battery
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+        -
+          uuid: cb9d994ec1d84a19aea5152bf28ed49b
+          name: powerwall.metrics.grid
+          type: DEPENDENT
+          key: powerwall.metrics.grid
+          delay: '0'
+          value_type: FLOAT
+          units: W
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.PowerMetrics.site
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+        -
+          uuid: 93a664c5950141bdbab2fff9fde07ba2
+          name: powerwall.metrics.home
+          type: DEPENDENT
+          key: powerwall.metrics.home
+          delay: '0'
+          value_type: FLOAT
+          units: W
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.PowerMetrics.load
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+        -
+          uuid: 17dd028d233d4652bd2d5812c18aaeb3
+          name: powerwall.metrics.solar
+          type: DEPENDENT
+          key: powerwall.metrics.solar
+          delay: '0'
+          value_type: FLOAT
+          units: W
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.PowerMetrics.solar
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+        -
+          uuid: 7817add4ca374ef4951cb61d93f43888
+          name: powerwall.json
+          type: EXTERNAL
+          key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+          delay: 10s
+          history: 3d
+          trends: '0'
+          value_type: TEXT
+        -
+          uuid: a9dbbaf0e16d45d78c80cf81bb0736c3
+          name: powerwall.solar.power
+          type: DEPENDENT
+          key: powerwall.solar.power
+          delay: '0'
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Solar.instant_power
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+      macros:
+        -
+          macro: '{$PWL_ADDRESS}'
+          value: 192.168.0.100
+          description: 'Powerwall IP adddress.'
+        -
+          macro: '{$PWL_EMAIL}'
+          value: mail@domain.com
+          description: 'Your Tesla registration email.'
+        -
+          macro: '{$PWL_LOCALE}'
+          value: Europe/Rome
+          description: 'Your time locale.'
+        -
+          macro: '{$PWL_PASSWORD}'
+          value: XXXXX
+          description: 'Your Powerwall password (not the web one, the one to access Powerwall directly using it''s LAN IP address.'
+  graphs:
+    -
+      uuid: b382707d35d6414e8448b3147c01e44b
+      name: powerwall.graph.solar
+      yaxismax: '5000'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        -
+          color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Tesla Powerwall'
+            key: powerwall.metrics.solar
+        -
+          sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Tesla Powerwall'
+            key: powerwall.solar.power
+    -
+      uuid: d05d588b46df4584b6fb1d6830ab7005
+      name: powerwall.graph.voltage
+      yaxismax: '250'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        -
+          color: 43A047
+          calc_fnc: ALL
+          item:
+            host: 'Tesla Powerwall'
+            key: powerwall.battery.voltage
