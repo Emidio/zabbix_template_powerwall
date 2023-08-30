@@ -1,6 +1,6 @@
 # Zabbix Template for Tesla Powerwall
 
-This is a very simple way to monitor your SolaEdge inverter directly without relying on the SolarEdge website. Information are not complete, and this work is really simple and rough - I just needed it to debug my system, quick and dirty.
+This is a very simple way to monitor your SolarEdge inverter directly without relying on the SolarEdge website. Information are not complete, and this work is really simple and rough - I just needed it to debug my system, quick and dirty.
 
 
 Install on zabbix server pypowerwall (python needed, install it if missing):
@@ -9,7 +9,7 @@ https://github.com/jasonacox/pypowerwall
 
 pip3 install pypowerwall
 
-You need to copy the two scripts in your externalscripts zabbix folder, adjust timezone in powerwall.py and path in powerwall.sh.
+You need to copy the two scripts in your externalscripts zabbix folder, adjust timezone in powerwall.py and path in powerwall.sh. Remember to give execution permissions to the .sh script.
 
 Import Zabbix template. Create a new host (doesn't matter interface, I set SNMP), assign the template, set the correct macros:
 
