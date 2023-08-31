@@ -7,8 +7,8 @@ import sys
 # Credentials for your Powerwall - Customer Login Data
 password=sys.argv[3]
 email=sys.argv[2]
-host = sys.argv[1]               # Address of your Powerwall Gateway
-timezone = "Europe/Rome"  # Your local timezone
+host = sys.argv[1]       # Address of your Powerwall Gateway
+timezone = sys.argv[4]   # Your local timezone
 
 # Connect to Powerwall
 pw = pypowerwall.Powerwall(host,password,email,timezone)
