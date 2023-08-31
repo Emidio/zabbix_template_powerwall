@@ -16,6 +16,7 @@ Import Zabbix template. Create a new host (doesn't matter interface, I set SNMP)
 * {$PWL_ADDRESS}    Powerwall local IP adddress.
 * {$PWL_EMAIL}      Your Tesla registration email.
 * {$PWL_PASSWORD}   Your Powerwall password (not the web one, the one to access Powerwall directly using it's LAN/WiFi IP address - should be last 5 characters of serial or password printed on the sticker). Refer to this document: https://www.tesla.com/support/energy/powerwall/own/connecting-network
+* {$PWL_LOCALE}     Your timezone locale, default Europe/Rome.
 
 You can try using a browser and loggin in to the Powerwall IP address.
 
