@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.2'
-  date: '2023-08-30T12:52:03Z'
+  date: '2023-08-31T05:47:44Z'
   template_groups:
     -
       uuid: 3dcd5bbe90534f9e8eb5c2d53756af63
@@ -29,7 +29,7 @@ zabbix_export:
               parameters:
                 - $.Firmware
           master_item:
-            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
         -
           uuid: 49a999e219c649b596ee55706b1751be
           name: powerwall.battery.level
@@ -43,7 +43,7 @@ zabbix_export:
               parameters:
                 - $.BatteryLevel
           master_item:
-            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
         -
           uuid: f00e774e26dd4a5f9b6277190c682d49
           name: powerwall.battery.power
@@ -57,7 +57,7 @@ zabbix_export:
               parameters:
                 - $.Battery.instant_power
           master_item:
-            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
         -
           uuid: 0f7a0b3d300b426389302b136f5c0878
           name: powerwall.battery.voltage
@@ -72,11 +72,11 @@ zabbix_export:
               parameters:
                 - $.Battery.instant_average_voltage
           master_item:
-            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
           triggers:
             -
               uuid: 69bcb81c1ad745afa44bcf2487c13e1f
-              expression: 'last(/Tesla Powerwall/powerwall.battery.voltage,#3)<207'
+              expression: 'avg(/Tesla Powerwall/powerwall.battery.voltage,5m)<207'
               name: powerwall.trigger.voltage.low
               priority: WARNING
         -
@@ -92,7 +92,7 @@ zabbix_export:
               parameters:
                 - $.Grid.instant_power
           master_item:
-            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
         -
           uuid: 6776d8788d084fb0b1ccdf92f11b171c
           name: powerwall.grid.voltage
@@ -107,7 +107,7 @@ zabbix_export:
               parameters:
                 - $.Grid.instant_average_voltage
           master_item:
-            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
         -
           uuid: 8242193981964d96b630507aa64e0574
           name: powerwall.home.power
@@ -121,7 +121,7 @@ zabbix_export:
               parameters:
                 - $.Home.instant_power
           master_item:
-            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
         -
           uuid: 65bef29dc7cc43e4bea30bf408b24b2a
           name: powerwall.metrics.battery
@@ -136,7 +136,7 @@ zabbix_export:
               parameters:
                 - $.PowerMetrics.battery
           master_item:
-            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
         -
           uuid: cb9d994ec1d84a19aea5152bf28ed49b
           name: powerwall.metrics.grid
@@ -151,7 +151,7 @@ zabbix_export:
               parameters:
                 - $.PowerMetrics.site
           master_item:
-            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
         -
           uuid: 93a664c5950141bdbab2fff9fde07ba2
           name: powerwall.metrics.home
@@ -166,7 +166,7 @@ zabbix_export:
               parameters:
                 - $.PowerMetrics.load
           master_item:
-            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
         -
           uuid: 17dd028d233d4652bd2d5812c18aaeb3
           name: powerwall.metrics.solar
@@ -181,12 +181,12 @@ zabbix_export:
               parameters:
                 - $.PowerMetrics.solar
           master_item:
-            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
         -
           uuid: 7817add4ca374ef4951cb61d93f43888
           name: powerwall.json
           type: EXTERNAL
-          key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+          key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
           delay: 10s
           history: 3d
           trends: '0'
@@ -204,7 +204,7 @@ zabbix_export:
               parameters:
                 - $.Solar.instant_power
           master_item:
-            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD}]'
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
       macros:
         -
           macro: '{$PWL_ADDRESS}'
