@@ -1,7 +1,6 @@
 # Zabbix Template for Tesla Powerwall
 
-This is a very simple way to monitor your SolarEdge inverter directly without relying on the SolarEdge website. Information are not complete, and this work is really simple and rough - I just needed it to debug my system, quick and dirty.
-
+This is a very simple way to monitor your PowerWall directly without relying on the Tesla website. This work is really simple and rough - I just needed it to debug my system, quick and dirty.
 
 Install on zabbix server pypowerwall (python needed, install it if missing):
 
