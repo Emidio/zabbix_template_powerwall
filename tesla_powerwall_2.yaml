@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.2'
-  date: '2023-08-31T05:47:44Z'
+  date: '2023-10-29T12:14:05Z'
   template_groups:
     -
       uuid: 3dcd5bbe90534f9e8eb5c2d53756af63
@@ -15,6 +15,40 @@ zabbix_export:
         -
           name: Templates/Power
       items:
+        -
+          uuid: 3206dab908f24ac3a6d16264ca237398
+          name: powerwall.alerts
+          type: DEPENDENT
+          key: powerwall.alerts
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Alerts
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        -
+          uuid: 852ab1422386416aa537f14a3e399813
+          name: powerwall.alerts.num
+          type: DEPENDENT
+          key: powerwall.alerts.num
+          delay: '0'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Alerts.length()
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+          triggers:
+            -
+              uuid: c5d59a763649430d8e071ec1c46484fe
+              expression: 'last(/Tesla Powerwall/powerwall.alerts.num)>1'
+              name: powerwall.trigger.alerts
+              priority: WARNING
         -
           uuid: cc4c9b526f1e46c5aa921f11f3e31541
           name: powerwall.battery.firmware
@@ -205,6 +239,64 @@ zabbix_export:
                 - $.Solar.instant_power
           master_item:
             key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+      discovery_rules:
+        -
+          uuid: 7255277b64df44f7b4cf9a66f2cebb5d
+          name: 'Alerts discovery'
+          type: DEPENDENT
+          key: powerwall.alert.discovery
+          delay: '0'
+          description: 'Discovery of Tesla Powerwall active and past alarms since the template has been assigned to a host.'
+          item_prototypes:
+            -
+              uuid: f67cf5ec5e8e4451b36bda82a50d62f6
+              name: 'powerwall.alert[{#POWERWALL_ALERT}]: Json'
+              type: DEPENDENT
+              key: 'powerwall.alert.json[{#POWERWALL_ALERT}]'
+              delay: '0'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - '$.AlertsDiscovery.[?(@.code==''{#POWERWALL_ALERT}'')].first()'
+              master_item:
+                key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+            -
+              uuid: 4ad4e80512cc4dccb2c97c1a2a5d3c2e
+              name: 'powerwall.alert[{#POWERWALL_ALERT}]: Status'
+              type: DEPENDENT
+              key: 'powerwall.alert.status[{#POWERWALL_ALERT}]'
+              delay: '0'
+              preprocessing:
+                -
+                  type: JSONPATH
+                  parameters:
+                    - $.status
+              master_item:
+                key: 'powerwall.alert.json[{#POWERWALL_ALERT}]'
+              trigger_prototypes:
+                -
+                  uuid: d423fb986f2c4a6fb5e489725abccf74
+                  expression: 'last(/Tesla Powerwall/powerwall.alert.status[{#POWERWALL_ALERT}])=1'
+                  name: 'Powerwall Alert #HOST - {#POWERWALL_ALERT}'
+                  event_name: 'powerwall alert.trigger'
+                  priority: WARNING
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+          lld_macro_paths:
+            -
+              lld_macro: '{#POWERWALL_ALERT_STATUS}'
+              path: $.status
+            -
+              lld_macro: '{#POWERWALL_ALERT}'
+              path: $.code
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.AlertsDiscovery
       macros:
         -
           macro: '{$PWL_ADDRESS}'
