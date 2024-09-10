@@ -1,0 +1,402 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 3dcd5bbe90534f9e8eb5c2d53756af63
+      name: Templates/Power
+  templates:
+    - uuid: cb7b7fdb83914df1a885cca429ce940b
+      template: 'Tesla Powerwall'
+      name: 'Tesla Powerwall'
+      description: 'Tesla Powerwall 2 template for Zabbix, using pypowerwall external script.'
+      groups:
+        - name: Templates/Power
+      items:
+        - uuid: 3206dab908f24ac3a6d16264ca237398
+          name: powerwall.alerts
+          type: DEPENDENT
+          key: powerwall.alerts
+          history: 90d
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Alerts
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: 852ab1422386416aa537f14a3e399813
+          name: powerwall.alerts.num
+          type: DEPENDENT
+          key: powerwall.alerts.num
+          history: 90d
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Alerts.length()
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: cc4c9b526f1e46c5aa921f11f3e31541
+          name: powerwall.battery.firmware
+          type: DEPENDENT
+          key: powerwall.battery.firmware
+          history: 90d
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Firmware
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+          triggers:
+            - uuid: 5524c9ab15f84442b5b4e119ec0a3667
+              expression: 'change(/Tesla Powerwall/powerwall.battery.firmware)=1'
+              recovery_mode: NONE
+              name: powerwall.trigger.firmware
+              event_name: 'Tesla Powerwall firmware update on {HOST.NAME}'
+              priority: WARNING
+              manual_close: 'YES'
+        - uuid: 49a999e219c649b596ee55706b1751be
+          name: powerwall.battery.level
+          type: DEPENDENT
+          key: powerwall.battery.level
+          history: 90d
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.BatteryLevel
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: f00e774e26dd4a5f9b6277190c682d49
+          name: powerwall.battery.power
+          type: DEPENDENT
+          key: powerwall.battery.power
+          history: 90d
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Battery.instant_power
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: 0f7a0b3d300b426389302b136f5c0878
+          name: powerwall.battery.voltage
+          type: DEPENDENT
+          key: powerwall.battery.voltage
+          history: 90d
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Battery.instant_average_voltage
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+          triggers:
+            - uuid: 69bcb81c1ad745afa44bcf2487c13e1f
+              expression: 'avg(/Tesla Powerwall/powerwall.battery.voltage,5m)<207'
+              name: powerwall.trigger.voltage.low
+              event_name: 'Tesla Powerwall: low voltage on {HOST.NAME}'
+              priority: WARNING
+        - uuid: cb1afa903e274d45a5284ea0b1c7abdb
+          name: powerwall.grid.power
+          type: DEPENDENT
+          key: powerwall.grid.power
+          history: 90d
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Grid.instant_power
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: 6776d8788d084fb0b1ccdf92f11b171c
+          name: powerwall.grid.voltage
+          type: DEPENDENT
+          key: powerwall.grid.voltage
+          history: 90d
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Grid.instant_average_voltage
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: 8242193981964d96b630507aa64e0574
+          name: powerwall.home.power
+          type: DEPENDENT
+          key: powerwall.home.power
+          history: 90d
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Home.instant_power
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: 65bef29dc7cc43e4bea30bf408b24b2a
+          name: powerwall.metrics.battery
+          type: DEPENDENT
+          key: powerwall.metrics.battery
+          history: 90d
+          value_type: FLOAT
+          units: W
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.PowerMetrics.battery
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: cb9d994ec1d84a19aea5152bf28ed49b
+          name: powerwall.metrics.grid
+          type: DEPENDENT
+          key: powerwall.metrics.grid
+          history: 90d
+          value_type: FLOAT
+          units: W
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.PowerMetrics.site
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: 93a664c5950141bdbab2fff9fde07ba2
+          name: powerwall.metrics.home
+          type: DEPENDENT
+          key: powerwall.metrics.home
+          history: 90d
+          value_type: FLOAT
+          units: W
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.PowerMetrics.load
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: 17dd028d233d4652bd2d5812c18aaeb3
+          name: powerwall.metrics.solar
+          type: DEPENDENT
+          key: powerwall.metrics.solar
+          history: 90d
+          value_type: FLOAT
+          units: W
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.PowerMetrics.solar
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: 7817add4ca374ef4951cb61d93f43888
+          name: powerwall.json
+          type: EXTERNAL
+          key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+          delay: 10s
+          history: 3d
+          value_type: TEXT
+        - uuid: a9dbbaf0e16d45d78c80cf81bb0736c3
+          name: powerwall.solar.power
+          type: DEPENDENT
+          key: powerwall.solar.power
+          history: 90d
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Solar.instant_power
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: 489c38cc24304cfbb4b78e3dc4d4b434
+          name: powerwall.totals.battery.exported
+          type: DEPENDENT
+          key: powerwall.totals.battery.exported
+          history: 90d
+          value_type: FLOAT
+          units: Wh
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Battery.energy_exported
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: ccc03f6924e14c9aa7c93a65e7320298
+          name: powerwall.totals.battery.imported
+          type: DEPENDENT
+          key: powerwall.totals.battery.imported
+          history: 90d
+          value_type: FLOAT
+          units: Wh
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Battery.energy_imported
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: ae6f6d95e99f43ff9167ad2d2ca90406
+          name: powerwall.totals.grid.exported
+          type: DEPENDENT
+          key: powerwall.totals.grid.exported
+          history: 90d
+          value_type: FLOAT
+          units: Wh
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Grid.energy_exported
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: 675771fc4f9246768aa01f8a9fe40d26
+          name: powerwall.totals.grid.imported
+          type: DEPENDENT
+          key: powerwall.totals.grid.imported
+          history: 90d
+          value_type: FLOAT
+          units: Wh
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Grid.energy_imported
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: 91f5032a45dc4800a4073af52f9a2a24
+          name: powerwall.totals.home.exported
+          type: DEPENDENT
+          key: powerwall.totals.home.exported
+          history: 90d
+          value_type: FLOAT
+          units: Wh
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Home.energy_exported
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: 579653ada8a640c1a4ef2a1ccc4c6378
+          name: powerwall.totals.home.imported
+          type: DEPENDENT
+          key: powerwall.totals.home.imported
+          history: 90d
+          value_type: FLOAT
+          units: Wh
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Home.energy_imported
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: d2b8a27ee7ca481fae12324e262f1d0b
+          name: powerwall.totals.solar.exported
+          type: DEPENDENT
+          key: powerwall.totals.solar.exported
+          history: 90d
+          value_type: FLOAT
+          units: Wh
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Solar.energy_exported
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+        - uuid: f61cedf27592401b8fe580d063dbb68d
+          name: powerwall.totals.solar.imported
+          type: DEPENDENT
+          key: powerwall.totals.solar.imported
+          history: 90d
+          value_type: FLOAT
+          units: Wh
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.Solar.energy_imported
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+      discovery_rules:
+        - uuid: 7255277b64df44f7b4cf9a66f2cebb5d
+          name: 'Alerts discovery'
+          type: DEPENDENT
+          key: powerwall.alert.discovery
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: 'Discovery of Tesla Powerwall active and past alarms since the template has been assigned to a host.'
+          item_prototypes:
+            - uuid: f67cf5ec5e8e4451b36bda82a50d62f6
+              name: 'powerwall.alert[{#POWERWALL_ALERT}]: Json'
+              type: DEPENDENT
+              key: 'powerwall.alert.json[{#POWERWALL_ALERT}]'
+              value_type: TEXT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.AlertsDiscovery.[?(@.code==''{#POWERWALL_ALERT}'')].first()'
+              master_item:
+                key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+            - uuid: 4ad4e80512cc4dccb2c97c1a2a5d3c2e
+              name: 'powerwall.alert[{#POWERWALL_ALERT}]: Status'
+              type: DEPENDENT
+              key: 'powerwall.alert.status[{#POWERWALL_ALERT}]'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.status
+              master_item:
+                key: 'powerwall.alert.json[{#POWERWALL_ALERT}]'
+          trigger_prototypes:
+            - uuid: d423fb986f2c4a6fb5e489725abccf74
+              expression: 'last(/Tesla Powerwall/powerwall.alert.status[{#POWERWALL_ALERT}])=1 and length(last(/Tesla Powerwall/powerwall.alert.json[{#POWERWALL_ALERT}]))>0'
+              name: 'Powerwall Alert #HOST - {#POWERWALL_ALERT}'
+              event_name: 'Powerwall Alert {HOST.NAME} - {#POWERWALL_ALERT}'
+              opdata: '{#POWERWALL_ALERT}'
+              priority: WARNING
+              manual_close: 'YES'
+          master_item:
+            key: 'powerwall.sh[{$PWL_ADDRESS}, {$PWL_EMAIL}, {$PWL_PASSWORD},{$PWL_LOCALE}]'
+          lld_macro_paths:
+            - lld_macro: '{#POWERWALL_ALERT_STATUS}'
+              path: $.status
+            - lld_macro: '{#POWERWALL_ALERT}'
+              path: $.code
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.AlertsDiscovery
+      macros:
+        - macro: '{$PWL_ADDRESS}'
+          value: 192.168.0.100
+          description: 'Powerwall IP adddress.'
+        - macro: '{$PWL_EMAIL}'
+          value: mail@domain.com
+          description: 'Your Tesla registration email.'
+        - macro: '{$PWL_LOCALE}'
+          value: Europe/Rome
+          description: 'Your time locale.'
+        - macro: '{$PWL_PASSWORD}'
+          value: XXXXX
+          description: 'Your Powerwall password (not the web one, the one to access Powerwall directly using it''s LAN IP address.'
+  graphs:
+    - uuid: b382707d35d6414e8448b3147c01e44b
+      name: powerwall.graph.solar
+      yaxismax: '5000'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        - color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Tesla Powerwall'
+            key: powerwall.metrics.solar
+        - sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Tesla Powerwall'
+            key: powerwall.solar.power
+    - uuid: d05d588b46df4584b6fb1d6830ab7005
+      name: powerwall.graph.voltage
+      yaxismax: '250'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        - color: 43A047
+          calc_fnc: ALL
+          item:
+            host: 'Tesla Powerwall'
+            key: powerwall.battery.voltage
