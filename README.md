@@ -18,3 +18,5 @@ Import Zabbix template. Create a new host (doesn't matter interface, I set SNMP)
 * {$PWL_LOCALE}     Your timezone locale, default Europe/Rome.
 
 Tested using Zabbix 6.2, Tesla Powerwall 2 and SolarEdge HD-Wawe SE6000H. Dashboards in Grafana using Zabbix plugin by Alexander Zobnin.
+
+2024-06-18 Updated to avoid vitals (disabled by Telsa in latest frmware update), updated Zabbix to 7.0.
