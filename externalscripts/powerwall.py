@@ -33,29 +33,40 @@ print("'Battery': %r\n" % pw.battery(verbose=True))
 print(",")
 print("'Home': %r\n" % pw.home(verbose=True))
 
-# Display Device Vitals
+
+
+'''
+# Display Device Vitals - 20240118 no more available after latest firmware update
 print(",")
 print("'Vitals': %r\n" % pw.vitals())
-
+'''
 
 
 # Display Alerts list with status: 0 inactive, 1 active
+
+
 print(",")
 print("'Alerts':")
 
 	
 # List of diabled alerts, to be considered as normal operation
-alertsdisabledlist = ["POD_w110_SW_EOC", "SYNC_a001_SW_App_Boot", "PINV_a067_overvoltageNeutralChassis", "SYNC_a001_SW_App_Boot", "SYNC_a046_DoCloseArguments", "SYNC_a038_DoOpenArguments"]
-	
-alertslist = pw.alerts()
+alertsdisabledlist = ["POD_w110_SW_EOC", "PINV_a067_overvoltageNeutralChassis", "SYNC_a001_SW_App_Boot", "SYNC_a046_DoCloseArguments", "SYNC_a038_DoOpenArguments", "POD_w109_SW_Self_Test_Request_Not_Serviced", "PINV_a043_gridResistanceTooHigh"]
+# alertsdisabledlist = ["POD_w110_SW_EOC", "SYNC_a001_SW_App_Boot"]
+
+# 404 Powerwall API not found at https://192.168.0.22/api/devices/vitals
+# Firmware 240400 detected - Does not support vitals API - disabling.
+# alertslist = pw.alerts()
+alertslist = []
 
 cleanlist = []
-for alert in alertslist:
-	# getting all alerts containing underscore and ignoring others (usually norma operations)
-  if '_' in alert:
-    if not any(x == alert for x in alertsdisabledlist):
-      cleanlist.append(alert)
+if alertslist is not None:
+	for alert in alertslist:
+		# getting all alerts containing underscore and ignoring others (usually norma operations)
+	  if '_' in alert:
+	    if not any(x == alert for x in alertsdisabledlist):
+	      cleanlist.append(alert)
 
+cleanlist = []
 
 fileid = host + password
 
@@ -63,13 +74,14 @@ fileid = host + password
 # then sending to md5()
 filenameenc = hashlib.md5(fileid.encode())
 
-chachefilepath = "/tmp/zbx_pw_" + filenameenc.hexdigest() + ".tmp"
+cachefilepath = "/tmp/zbx_pw_" + filenameenc.hexdigest() + ".tmp"
+gridexportfilepath = "/var/www/html/fv.txt"
 
-if not os.path.isfile(chachefilepath):
-  cachefile = open(chachefilepath, "w")
+if not os.path.isfile(cachefilepath):
+  cachefile = open(cachefilepath, "w")
   cachefile.close()
 
-cachefile = open(chachefilepath, "r") 
+cachefile = open(cachefilepath, "r") 
 
 newalert = False
 filealerts = cachefile.read()
@@ -88,12 +100,13 @@ for cleanalert in cleanlist:
 
 
 if newalert:
-  cachefile = open(chachefilepath, "w")
+  cachefile = open(cachefilepath, "w")
   cachefile.write(','.join(filealertslist))
   cachefile.close()
 
 if (len(filealertslist) == 1 and filealertslist[0] == ""):
   filealertslist.pop(0)
+
 
 print("[");
 firstitem = True
